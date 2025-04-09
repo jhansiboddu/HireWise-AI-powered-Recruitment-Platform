@@ -1,0 +1,61 @@
+.dropzone {
+  width: 100%;
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border: 2px dashed #d1d5db; /* Tailwind gray-300 */
+  border-radius: 1rem;
+  background-color: #f9fafb; /* Tailwind gray-50 */
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.dropzone:hover {
+  border-color: #3b82f6; /* Tailwind blue-500 */
+  background-color: #f0f9ff; /* Soft blue */
+}
+
+.dropzone p {
+  margin: 1rem 0;
+  color: #4b5563; /* Tailwind gray-700 */
+  font-size: 1rem;
+}
+
+.dropzone input[type="file"] {
+  display: none;
+}
+
+.upload-label {
+  color: #3b82f6;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.filename {
+  margin-top: 1rem;
+  font-style: italic;
+  color: #111827; /* Tailwind gray-900 */
+}
+
+button {
+  margin-top: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #3b82f6;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #2563eb; /* Tailwind blue-600 */
+}
+
+button:disabled {
+  background-color: #9ca3af; /* Tailwind gray-400 */
+  cursor: not-allowed;
+}
