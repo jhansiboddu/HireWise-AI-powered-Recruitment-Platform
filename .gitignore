@@ -1,0 +1,17 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# VS Code settings
+.vscode/
+
+# Environment variables or secrets
+.env
+
+# macOS / Linux / Windows system files
+.DS_Store
+Thumbs.db
