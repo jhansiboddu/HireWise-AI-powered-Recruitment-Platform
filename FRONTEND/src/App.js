@@ -6,6 +6,9 @@ import UploadResume from './pages/UploadResume';
 import UploadJD from './pages/UploadJD';
 import MatchCandidates from './pages/MatchCandidates';
 import ShortlistedCandidates from './pages/ShortlistedCandidates';
+import Dashborad from './pages/dashboard'
+import AllJobs from "./pages/AllJobs";
+
 import './App.css';
 
 function App() {
@@ -18,6 +21,8 @@ function App() {
         <Route path="/upload-jd" element={<UploadJD />} />
         <Route path="/match" element={<MatchCandidates />} />
         <Route path="/shortlisted" element={<ShortlistedCandidates />} />
+        <Route path="/all-jobs" element={<AllJobs />} /> 
+        <Route path="/dashborad" element={<Dashborad />}/>
       </Routes>
     </Router>
   );

@@ -1,0 +1,34 @@
+.shortlist-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .shortlist-table th {
+    background-color: #384c75; /* light gray */
+    color: #2f598f; /* dark slate text */
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #050817;
+  }
+  
+  .shortlist-table td {
+    padding: 12px;
+    border-bottom: 1px solid #22314f;
+  }
+  
+  .send-email-btn {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .send-email-btn:disabled {
+    background-color: #10b981;
+    cursor: default;
+  }
+  
