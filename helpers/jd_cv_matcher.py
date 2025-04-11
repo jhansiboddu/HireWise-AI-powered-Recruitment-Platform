@@ -53,7 +53,6 @@ def run_matching():
             cand_skills = candidate[1] or ''
             cand_qualifications = candidate[2] or ''
             cand_experience = candidate[3] or ''
-            # 🚫 Skip if already matched
             if (job_id, candidate_id) in existing_matches:
                 continue
             score = get_match_score(
@@ -65,3 +64,40 @@ def run_matching():
 
     conn.close()
     return {"message": "Matching complete using focused job/candidate attributes."}
+
+def match_new_candidate(candidate_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Get candidate data
+    cursor.execute(
+        "SELECT skills, education, experience FROM candidates WHERE id = ?", (candidate_id,)
+    )
+    candidate = cursor.fetchone()
+    if not candidate:
+        conn.close()
+        return {"error": "Candidate not found."}
+
+    cand_skills = candidate[0] or ''
+    cand_qualifications = candidate[1] or ''
+    cand_experience = candidate[2] or ''
+
+    # Get existing job matches for this candidate
+    cursor.execute("SELECT job_id FROM match_results WHERE candidate_id = ?", (candidate_id,))
+    matched_job_ids = {row[0] for row in cursor.fetchall()}
+
+    # Get all jobs
+    cursor.execute("SELECT id, summary FROM jobs")
+    jobs = cursor.fetchall()
+
+    for job_id, job_summary in jobs:
+        if job_id in matched_job_ids:
+            continue
+        job_summary = job_summary or ''
+        score = get_match_score(
+            job_summary, cand_skills, cand_qualifications, cand_experience
+        )
+        store_match_result(job_id, candidate_id, score)
+
+    conn.close()
+    return {"message": f"Matching completed for candidate {candidate_id}."}

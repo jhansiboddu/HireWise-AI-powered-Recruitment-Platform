@@ -36,8 +36,10 @@ def store_candidate_data(parsed_data: dict):
         parsed_data.get("experience"),
         parsed_data.get("skills")
     ))
+    candidate_id = cursor.lastrowid  # <-- Get the ID of the newly inserted row
     conn.commit()
     conn.close()
+    return candidate_id
 
 def create_job_table():
     conn = get_db_connection()
