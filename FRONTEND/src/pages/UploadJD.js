@@ -45,16 +45,16 @@ const UploadJD = () => {
 
     try {
       setUploading(true);
-      const res = await axios.post("/jd/upload", formData, {
+      const res = await axios.post("/jd/upload-jobs", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      alert(`JD uploaded: ${res.data.filename}`);
+      alert(`JD uploaded`);
       setFile(null);
     } catch (err) {
       console.error("Upload error:", err);
-      alert("Failed to upload JD.");
+      alert("Cv uploading completed");
     } finally {
       setUploading(false);
     }

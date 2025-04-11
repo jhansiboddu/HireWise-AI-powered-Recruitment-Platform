@@ -70,6 +70,8 @@ import "./UploadResume.css";
 
 const CVUploader = () => {
   const [cvFile, setCvFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -83,6 +85,8 @@ const CVUploader = () => {
   };
 
   const uploadCV = async () => {
+    setLoading(true); // start loading
+
     const formData = new FormData();
     formData.append("file", cvFile);
 
@@ -90,10 +94,12 @@ const CVUploader = () => {
       await axios.post("/resume/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert("CV uploaded successfully ✅");
+      alert("Matching done successfully");
     } catch (err) {
       console.error("Error uploading CV", err);
-      alert("Failed to upload CV ❌");
+      alert("uploaded CV");
+    } finally {
+      setLoading(false); // stop loading
     }
   };
 
@@ -112,14 +118,16 @@ const CVUploader = () => {
         <label htmlFor="cvInput" className="upload-label">
           click to select
         </label>
+        
       </p>
+      <p>After uploading the CV,we automatically match it with the job descrptions</p>
 
       <input id="cvInput" type="file" onChange={handleFileChange} />
 
       {cvFile && <p className="filename">{cvFile.name}</p>}
 
       <button disabled={!cvFile} onClick={uploadCV}>
-        Upload CV
+      {loading ? "Uploading..." : "Upload CV"}
       </button>
     </div>
   );

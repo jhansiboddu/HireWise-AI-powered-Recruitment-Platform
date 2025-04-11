@@ -1,34 +1,98 @@
+.shortlisted-container {
+  padding: 40px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
 .shortlist-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .shortlist-table th {
-    background-color: #384c75; /* light gray */
-    color: #2f598f; /* dark slate text */
-    padding: 12px;
-    text-align: left;
-    font-weight: 600;
-    border-bottom: 2px solid #050817;
-  }
-  
-  .shortlist-table td {
-    padding: 12px;
-    border-bottom: 1px solid #22314f;
-  }
-  
-  .send-email-btn {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .send-email-btn:disabled {
-    background-color: #10b981;
-    cursor: default;
-  }
-  
+  width: 90%;
+  max-width: 1000px;
+  margin: 0 auto;
+  border-collapse: collapse;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.shortlist-table thead {
+  background-color: #6f42c1; /* Professional purple */
+  color: black; /* Makes text visible on purple */
+  font-weight: bold;
+}
+
+.shortlist-table th {
+  padding: 10px;
+  text-align: left;
+}
+
+
+.shortlist-table tbody tr:hover {
+  background-color: #f1f9ff;
+}
+
+.send-email-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.send-email-btn:hover {
+  background-color: #0056b3;
+}
+
+.send-email-btn:disabled {
+  background-color: #28a745;
+  cursor: default;
+}
+
+.dropdown-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dropdown-container label {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.dropdown-container select {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #6f42c1;
+}
+
+.search-bar-container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.search-bar {
+  padding: 10px 16px;
+  font-size: 16px;
+  width: 280px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease-in-out;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.4);
+}
