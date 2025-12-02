@@ -17,3 +17,576 @@ venv/
 Thumbs.db
 
 FRONTEND/node_modules/
+
+MINIKUBE KUBECTL 
+
+Create Deployment (Nginx example) :
+
+kubectl create deployment mynginx --image=nginx
+
+Update deployment image if already created : 
+
+kubectl set image deployment/mynginx nginx=nginx:latest
+
+Expose Deployment as a Service :
+
+kubectl expose deployment mynginx --type=NodePort --port=80 --target-port=80
+
+Scale Deployment :
+
+kubectl scale deployment mynginx --replicas=4
+
+Get service details :
+
+kubectl get service mynginx
+
+Access Nginx App Using Port Forward :
+
+kubectl port-forward svc/mynginx 8081:80
+
+NAGIOS :
+
+Pull Nagios Image
+
+docker pull jasonrivers/nagios:latest
+
+Run Nagios Container
+
+docker run --name nagiosdemo -p 8888:80 jasonrivers/nagios:latest
+
+Access Nagios Web UI
+
+Open:
+http://localhost:8888
+
+
+SCRIPTED PIPELINE :
+
+pipeline{
+    agent any
+    tools{
+        maven 'MAVEN_HOME'
+    }
+    stages{
+        stage('git repo & clean'){
+            steps{
+                bat "rmdir /s /q maven-java-webapp || exit 0"
+                bat "git clone https://github.com/jhansiboddu/maven-java-webapp.git"
+                bat "mvn clean -f maven-java-webapp/pom.xml"
+            }
+        }
+        stage('install'){
+            steps{
+                bat "mvn install -f maven-java-webapp/pom.xml"
+            }
+        }
+        stage('test'){
+            steps{
+                bat "mvn test -f maven-java-webapp/pom.xml"
+            }
+        }
+        stage('package'){
+            steps{
+                bat "mvn package -f maven-java-webapp/pom.xml"
+            }
+        }
+        stage('deploy') {
+            steps {
+                bat """
+                curl -u admin:1234 -T maven-java-webapp/target/webapp.war "http://localhost:8085/manager/text/deploy?path=/webapp&update=true"
+                """
+            }
+        }
+
+    }
+}
+
+
+DOCKER COMPOSE :
+
+Part 1 – Simple Docker Compose (WordPress + MySQL) and Scaling
+
+Step 1: Create a project folder
+Create a folder, for example:
+compose-wp
+Go inside it.
+
+Step 2: Create docker-compose.yml
+Create a file named:
+docker-compose.yml
+
+Write this content inside:
+
+version: '3.8'
+services:
+wordpress:
+image: wordpress:latest
+ports:
+- "8080:80"
+environment:
+WORDPRESS_DB_HOST: db:3306
+WORDPRESS_DB_USER: wordpress
+WORDPRESS_DB_PASSWORD: wordpress
+WORDPRESS_DB_NAME: wordpress
+depends_on:
+- db
+
+db:
+image: mysql:5.7
+environment:
+MYSQL_ROOT_PASSWORD: rootpassword
+MYSQL_DATABASE: wordpress
+MYSQL_USER: wordpress
+MYSQL_PASSWORD: wordpress
+
+Step 3: Start both services (WordPress + MySQL)
+From inside the folder, run:
+docker-compose up -d
+
+Step 4: Check running containers
+docker ps
+
+Step 5: Open browser
+Visit:
+http://localhost:8080
+
+You should see the WordPress setup page.
+
+Step 6: Stop and remove the containers and network
+docker-compose down
+
+🔸 Scaling Example with docker-compose
+
+Step 7: Scale a service (general form)
+docker-compose up --scale <service-name>=2 -d
+
+Example (if service is named web):
+docker-compose up --scale web=2 -d
+
+Note: Only one container can bind to a specific host port (like 8080:80).
+If you start 2 containers with the same mapped port, only one will map to the host port. The second runs without a mapped port.
+
+🔸 Define separate services with different ports (web1 and web2)
+
+Step 8: Create a new folder
+For example:
+compose-nginx-multi
+
+Step 9: Create docker-compose.yml with two nginx services
+File: docker-compose.yml
+
+Content:
+
+version: "3.9"
+services:
+web1:
+image: nginx:alpine
+ports:
+- "8080:80"
+
+web2:
+image: nginx:alpine
+ports:
+- "8081:80"
+
+Step 10: Start both nginx containers
+docker-compose up -d
+
+Step 11: Check in browser
+http://localhost:8080
+ → shows nginx from web1
+http://localhost:8081
+ → shows nginx from web2
+
+🔹 Part 2 – Define and Run Multiple Interdependent Services (web + db)
+
+Task 1: Nginx + Postgres
+
+Step 1: Create a folder
+compose-lab
+
+Step 2: Go inside the folder
+cd compose-lab
+
+Step 3: Create docker-compose.yml with web and db services
+
+File: docker-compose.yml
+
+Content:
+
+version: "3.9"
+services:
+web:
+image: nginx:latest
+ports:
+- "8080:80"
+
+db:
+image: postgres:15
+environment:
+POSTGRES_USER: demo
+POSTGRES_PASSWORD: demo
+POSTGRES_DB: demo_db
+
+Step 4: Start the setup
+docker compose up -d
+
+Step 5: Check containers
+docker compose ps
+
+Step 6: Open browser
+http://localhost:8080
+
+Expected: Nginx welcome page.
+db container (Postgres) runs in the background.
+
+🔹 Part 3 – Add Redis and depends_on (web, db, redis)
+
+Task 2: Write and interpret docker-compose.yml
+
+Step 1: Edit docker-compose.yml and add redis service under services
+
+Add:
+
+redis:
+image: redis:alpine
+
+Step 2: Add depends_on in web so it waits for redis
+
+web becomes:
+
+web:
+image: nginx:latest
+ports:
+- "8080:80"
+depends_on:
+- redis
+
+(Your full services section now has web, db, and redis.)
+
+Step 3: Restart the setup
+docker compose up -d
+
+Step 4: Check status of all services
+docker compose ps
+
+Expected:
+web, db, redis → all listed as running.
+
+🔹 Part 4 – Deploy Across Different Machines
+
+Task 3: Move compose-lab to another machine
+
+Step 1: Zip the folder
+Zip the compose-lab folder (which contains docker-compose.yml and other files).
+
+Step 2: Transfer the zip
+Copy the zip to another machine where Docker and Docker Compose are installed.
+Unzip it there.
+
+Step 3: Go into the folder on the new machine
+cd compose-lab
+
+Step 4: Run the same compose command
+docker compose up -d
+
+Step 5: Test services
+Open browser:
+http://localhost:8080
+ → Nginx welcome page
+Postgres (db) runs in background with same configuration.
+
+Expected:
+Same behavior on both machines without any changes to docker-compose.yml.
+
+🔹 Part 5 – Networking and Persistent Storage
+
+Task 4: Use a custom network and volume
+
+Step 1: Edit docker-compose.yml to add networks and volumes at top level
+
+Add at bottom (or top, outside services):
+
+networks:
+app-net:
+
+volumes:
+db-data:
+
+Step 2: Update web service to use app-net and depend on db
+
+web becomes:
+
+web:
+image: nginx:latest
+ports:
+- "8080:80"
+networks:
+- app-net
+depends_on:
+- db
+
+Step 3: Update db service to use db-data volume and app-net network
+
+db becomes:
+
+db:
+image: postgres:15
+environment:
+POSTGRES_USER: demo
+POSTGRES_PASSWORD: demo
+POSTGRES_DB: demo_db
+volumes:
+- db-data:/var/lib/postgresql/data
+networks:
+- app-net
+
+Now full file has: services (web, db, redis if you kept it), networks (app-net), volumes (db-data).
+
+Step 4: Start the setup with networking + volume
+docker compose up -d
+
+🔸 Insert data into Postgres using psql (optional, but useful)
+
+Step 5: Check db container name
+docker ps
+
+Example name (from compose):
+compose-lab-db-1
+
+Step 6: Open psql inside the db container
+docker exec -it compose-lab-db-1 psql -U demo -d demo_db
+
+Step 7: Create a table inside psql
+
+Run these commands in psql:
+
+CREATE TABLE users (
+id SERIAL PRIMARY KEY,
+name VARCHAR(50),
+email VARCHAR(100)
+);
+
+INSERT INTO users (name, email) VALUES
+('Alice', 'alice@example.com
+'),
+('Bob', 'bob@example.com
+');
+
+Step 8: Verify data
+SELECT * FROM users;
+
+You should see Alice and Bob as rows.
+
+Step 9: Exit psql
+\q
+
+🔸 Test data persistence with volume
+
+Step 10: Stop and remove containers (but not volume)
+docker compose down
+
+Step 11: Start again
+docker compose up -d
+
+Step 12: Connect again to Postgres
+docker exec -it compose-lab-db-1 psql -U demo -d demo_db
+
+Then run:
+SELECT * FROM users;
+
+Expected:
+Data (Alice, Bob) still exists because of db-data volume.
+All services communicate using app-net network.
+
+🔹 Part 6 – Faster Iteration During Development (Flask App + Compose)
+
+Task 5: Build and run a simple Flask app with docker-compose
+
+Step 1: In compose-lab folder, create app.py
+
+Content:
+
+from flask import Flask
+app = Flask(name)
+
+@app.route("/")
+def home():
+return "Hello from Flask + Docker!"
+
+if name == "main":
+app.run(host="0.0.0.0", port=5000)
+
+Step 2: Create a Dockerfile in the same folder
+
+File name: Dockerfile
+
+Content:
+
+FROM python:3.10-slim
+WORKDIR /app
+COPY app.py /app/
+RUN pip install flask
+CMD ["python", "app.py"]
+
+Step 3: Update docker-compose.yml web service to build from Dockerfile and expose port 5000
+
+Change web service to:
+
+web:
+build: .
+ports:
+- "5000:5000"
+depends_on:
+- db
+
+(Keep db and redis as before, with networks/volumes if already added.)
+
+Step 4: Build and run everything with compose
+docker compose up --build
+
+Step 5: Test in browser
+Open:
+http://localhost:5000
+
+Expected:
+Shows:
+Hello from Flask + Docker!
+
+Step 6: Change app.py to test faster iterations
+
+Edit app.py:
+
+Change:
+return "Hello from Flask + Docker!"
+
+To:
+return "Hello Docker Compose!"
+
+Step 7: Rebuild and restart (if needed)
+In many setups, if code is copied on build, you need to rebuild:
+docker compose up --build
+
+Then refresh browser:
+http://localhost:5000
+
+Expected:
+New message appears:
+Hello Docker Compose!
+
+
+DOCKER :
+
+✅ Docker Assignment – Step-Wise Process (Easy Revision)
+Step 1: Create a folder for Redis
+
+Windows: C:\DockerProjects\Redis
+Open Git Bash and go to the folder:
+cd /c/DockerProjects/Redis
+
+Step 2: Create a Dockerfile
+
+Create a file named: Dockerfile
+Write inside it:
+FROM redis:latest
+CMD ["redis-server"]
+
+⭐ BUILD → RUN → COMMIT → PUSH → PULL → TEST FLOW
+Step 3: Build image
+
+docker build -t redisnew .
+
+Step 4: Run container
+
+docker run --name myredisnew -d redisnew
+
+Step 5: Check running containers
+
+docker ps
+
+Step 6: Stop the container
+
+docker stop myredisnew
+
+Step 7: List all containers (including stopped)
+
+docker ps -a
+
+⭐ CREATE IMAGE FROM CONTAINER
+Step 8: Commit the container into new image
+
+docker commit 0e993d2009a1 budarajumadhurika/redis1
+
+Step 9: List all images
+
+docker images
+
+⭐ LOGIN → PUSH TO DOCKER HUB
+Step 10: Login to Docker Hub
+
+docker login
+
+Step 11: Push the image
+
+docker push budarajumadhurika/redis1
+
+⭐ REMOVE OLD CONTAINER + IMAGE
+Step 12: Remove the container
+
+docker rm 0e993d2009a1
+
+Step 13: Remove the local image
+
+docker rmi budarajumadhurika/redis1
+
+Step 14: Check containers again
+
+docker ps -a
+
+⭐ DOWNLOAD IMAGE AGAIN FROM DOCKER HUB
+Step 15: Pull the image
+
+docker pull budarajumadhurika/redis1
+
+Step 16: Run a new container using pulled image
+
+docker run --name myredis -d budarajumadhurika/redis1
+
+⭐ REDIS COMMANDS INSIDE CONTAINER
+Step 17: Open Redis CLI inside container
+
+docker exec -it myredis redis-cli
+
+Step 18: Set a key
+
+SET name "Abcdef"
+
+Step 19: Get the key
+
+GET name
+
+Step 20: Exit Redis CLI
+
+exit
+
+⭐ STOP & REMOVE EVERYTHING
+Step 21: Stop container
+
+docker stop myredis
+
+Step 22: Remove container
+
+docker rm 50a6e4a9c326
+
+Step 23: Show images
+
+docker images
+
+Step 24: Remove the image
+
+docker rmi budarajumadhurika/redis1
+
+OPTIONAL
+Step 25: Logout from Docker Hub
+
+docker logout
